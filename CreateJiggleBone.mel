@@ -1,0 +1,30 @@
+////////////////////////////////////////////////////////////////////////////
+// Creates a jigglebone. Script by Draqen                                 //
+// The bone will be bound to a tri, animate the tri to influence the bone //
+// 7:41PM Jan 12th 2016                                                   //
+////////////////////////////////////////////////////////////////////////////
+
+//Generate a random number, rounded down.
+	$myrand = rand(100);
+	int $myint= (int) $myrand;
+
+
+// Create a joint, a polyplane, delete its history, give ita jiggle modifier.
+	joint -p 0 0 0 -n ("JiggleBone_" + $myint + "_Jnt");
+	polyPlane -w 1 -h 1 -sx 1 -sy 1 -ax 0 1 0 -cuv 2 -ch 1 -n ("JiggleBone_" + $myint + "_Parent");
+	select -r ("JiggleBone_" + $myint + "_Parent.vtx[2]");
+	doDelete;
+	select -r ("JiggleBone_" + $myint + "_Parent");
+	DeleteHistory;
+	doJiggle 1 { "0.027", "0.1", "1", "0", "0", "default", "" };
+
+//Create the point constraint to parent the bone to the plane.
+    select -r ("JiggleBone_" + $myint + "_Parent");
+    select -add ("JiggleBone_" + $myint + "_Jnt");
+    doCreatePointOnPolyConstraintArgList 2 {   "0" ,"0" ,"0" ,"1" ,"" ,"1" ,"1" ,"0" ,"0" ,"0" };
+    pointOnPolyConstraint -maintainOffset  -weight 1;
+    
+//Join the nodes together in to a group.
+    group -n ("JiggleBone_" + $myint + "_Grp");
+    //Select the group
+        select -r ("JiggleBone_" + $myint + "_Grp");
